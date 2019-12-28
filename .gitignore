@@ -1,0 +1,11 @@
+mastodon
+python-twitter
+bin
+lib
+local_settings.py
+.Python
+.idea
+__pycache__
+dangerousbot.zip
+include
+package
