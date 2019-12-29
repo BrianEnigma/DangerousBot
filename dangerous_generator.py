@@ -95,8 +95,6 @@ class DangerousGenerator:
         if self._debug:
             print(command)
         subprocess.check_output(command, shell=True)
-        if not self._debug:
-            os.remove(resized_item_filename)
         if not os.path.isfile(output_filename):
             self._error_string = "No output file when annotating text."
             return False

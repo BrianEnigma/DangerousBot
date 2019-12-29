@@ -16,6 +16,7 @@ package: python-twitter mastodon *.py local_settings.py
 	cp dangerous_generator.py ./package/
 	cp local_settings.py ./package/
 	cp dangerous.png ./package/
+	cp Emulogic.ttf ./package/
 
 python-twitter:
 	rm -rf python-twitter
