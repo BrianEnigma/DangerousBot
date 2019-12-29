@@ -3,6 +3,7 @@
 # System imports
 import os
 import random
+import re
 import subprocess
 import tempfile
 
@@ -41,6 +42,7 @@ class DangerousGenerator:
         search = BingImageSearch(self._bing_api_key)
         url = search.get_image_url(search_term=word, min_height=200, only_transparent=True)
         if len(url) == 0:
+            self._error_string = "No image URL for search term " + word
             return False
         if self._debug:
             print("IMAGE URL: %s" % url)
@@ -66,6 +68,7 @@ class DangerousGenerator:
         output_filename = tempfile.mkstemp(suffix='.png')[1]
         if self._debug:
             print("OUTPUT IMAGE: %s" % output_filename)
+        # Composite the two images.
         command = "composite -geometry +%d+%d \"%s\" \"%s\" \"%s\"" % (
             x_offset, y_offset,
             resized_item_filename,
@@ -78,8 +81,27 @@ class DangerousGenerator:
         if not self._debug:
             os.remove(resized_item_filename)
         if not os.path.isfile(output_filename):
+            self._error_string = "No output file when annotating text."
             return False
         if os.stat(output_filename).st_size <= 0:
+            self._error_string = "Empty file when compositing images."
+            return False
+        # Add the text
+        command = "convert \"%s\" -fill white -font ./Emulogic.ttf -pointsize 25 -gravity north -annotate +0+92 \"IT'S DANGEROUS TO GO\\nALONE! TAKE THIS\\n%s.\" \"%s\"" % (
+            output_filename,
+            re.sub('[^A-Za-z0-9 ]', ' ', word),
+            output_filename
+        )
+        if self._debug:
+            print(command)
+        subprocess.check_output(command, shell=True)
+        if not self._debug:
+            os.remove(resized_item_filename)
+        if not os.path.isfile(output_filename):
+            self._error_string = "No output file when annotating text."
+            return False
+        if os.stat(output_filename).st_size <= 0:
+            self._error_string = "Empty file when annotating text."
             return False
         self.image_file = output_filename
         return True
