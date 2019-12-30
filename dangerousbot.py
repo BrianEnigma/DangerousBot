@@ -66,7 +66,7 @@ def lambda_handler(event, context):
         generator = DangerousGenerator(BING_API_KEY)
         generator.set_debug(DEBUG)
         if generator.generate_random():
-            tweet_text = "It's dangerous to go alone. Take this %s." % generator.get_noun().lower()
+            tweet_text = "It's dangerous to go alone! Take this %s." % generator.get_noun().lower()
             result = "%s // file path %s" % (tweet_text, generator.get_image_path())
 
             if not DEBUG:
