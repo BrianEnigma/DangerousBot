@@ -134,17 +134,18 @@ class DangerousGenerator:
 
     @staticmethod
     def get_word(dictionary_filename):
-        word = ''
-        margin = 100 # Must be at least twice the size of a word in the password dictionary
-        with open(dictionary_filename, 'r') as f:
-            f.seek(0, 2)
-            fileSize = f.tell() - margin
-
-            for i in range(1, 1000):
-                pointer = random.randint(0, fileSize - margin)
-                f.seek(pointer)
-                word = f.readline()  # probably does not start on a word boundry
-                word = f.readline()[:-1]
-                if len(word) >= 1:
-                    break
-        return word
+        return 'guillotine'
+        # word = ''
+        # margin = 100 # Must be at least twice the size of a word in the password dictionary
+        # with open(dictionary_filename, 'r') as f:
+        #     f.seek(0, 2)
+        #     fileSize = f.tell() - margin
+        #
+        #     for i in range(1, 1000):
+        #         pointer = random.randint(0, fileSize - margin)
+        #         f.seek(pointer)
+        #         word = f.readline()  # probably does not start on a word boundry
+        #         word = f.readline()[:-1]
+        #         if len(word) >= 1:
+        #             break
+        # return word
