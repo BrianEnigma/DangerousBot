@@ -37,7 +37,7 @@ def do_post_mastodon(tweet_text, image_file, image_mime_type):
     api = Mastodon(
         client_secret = CLIENT_SECRET,
         access_token = ACCESS_TOKEN,
-        api_base_url = 'https://mastodon.cloud'
+        api_base_url = 'https://botsin.space'
     )
     with open(image_file, 'rb') as f:
         content = f.read(-1)
