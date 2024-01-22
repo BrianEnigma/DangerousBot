@@ -2,10 +2,11 @@
 
 import json
 import urllib
+import urllib.request
 
 
 class BingImageSearch:
-    API_ENDPOINT = 'https://api.cognitive.microsoft.com/bing/v5.0/images/search'
+    API_ENDPOINT = 'https://api.bing.microsoft.com/v7.0/images/search'
 
     def __init__(self, api_key):
         self._api_key = api_key
