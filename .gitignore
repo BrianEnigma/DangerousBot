@@ -1,5 +1,5 @@
 mastodon
-python-twitter
+serpapi
 bin
 lib
 local_settings.py

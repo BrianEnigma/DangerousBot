@@ -8,7 +8,7 @@ import subprocess
 import tempfile
 
 # Local imports
-from bing_image_search import *
+from serpapi_image_search import *
 
 
 class DangerousGenerator:
@@ -17,9 +17,9 @@ class DangerousGenerator:
     BACKGROUND_HEIGHT = 505
     RESIZE_MAX = 150
 
-    def __init__(self, bing_api_key):
+    def __init__(self, serp_api_key):
         self._debug = False
-        self._bing_api_key = bing_api_key
+        self._serp_api_key = serp_api_key
         self._error_string = 'Unknown Error'
         self.word = ''
         self.image_file = ''
@@ -39,14 +39,14 @@ class DangerousGenerator:
         return False
 
     def generate_from_word(self, word):
-        search = BingImageSearch(self._bing_api_key)
-        url = search.get_image_url(search_term=word, min_height=200, only_transparent=True)
+        search = SerpApiImageSearch(self._serp_api_key)
+        url = search.get_image_url(search_term=word)
         if len(url) == 0:
             self._error_string = "No image URL for search term " + word
             return False
         if self._debug:
             print("IMAGE URL: %s" % url)
-        content = BingImageSearch.get_image_bytes_for_url(url)
+        content = SerpApiImageSearch.get_image_bytes_for_url(url)
         if len(content) == 0:
             return False
         item_filename = tempfile.mkstemp(suffix='.png')[1]
