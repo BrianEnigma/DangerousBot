@@ -9,7 +9,6 @@ deploy: package
 package: serpapi mastodon *.py local_settings.py
 	mkdir -p package
 	cp -R mastodon/* ./package/
-	cp -R python-twitter/* ./package/
 	cp noun-10K.txt ./package/
 	cp dangerousbot.py ./package/
 	cp serpapi_image_search.py ./package/

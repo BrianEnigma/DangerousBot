@@ -7,7 +7,11 @@ import re
 import subprocess
 import tempfile
 
+# Third-party imports
+import boto3
+
 # Local imports
+from local_settings import UPCOMING_BUCKET
 from serpapi_image_search import *
 
 
@@ -23,9 +27,41 @@ class DangerousGenerator:
         self._error_string = 'Unknown Error'
         self.word = ''
         self.image_file = ''
+        self._debug_log = ''
 
     def set_debug(self, debug):
         self._debug = debug
+
+    def get_debug_log(self):
+        return self._debug_log
+
+    def generate_one(self):
+        s3 = boto3.client('s3')
+        bucket = UPCOMING_BUCKET
+        response = s3.list_objects_v2(Bucket=bucket)
+        png_keys = [
+            obj['Key'] for obj in response.get('Contents', [])
+            if obj['Key'].lower().endswith('.png')
+        ]
+        self._debug_log += f"Found {len(png_keys)} PNG files in bucket {bucket}\n"
+        if not png_keys:
+            self._debug_log += "No PNG files found in bucket, generating random\n"
+            return self.generate_random()
+        key = random.choice(png_keys)
+        noun = os.path.splitext(os.path.basename(key))[0]
+        tmp = tempfile.mkstemp(suffix='.png')[1]
+        self._debug_log += f"Using {key} as the image\n"
+        try:
+            s3.download_file(bucket, key, tmp)
+            result = self.generate_from_word_and_image(noun, tmp)
+            if result:
+                self.word = noun
+                if not self._debug:
+                    s3.delete_object(Bucket=bucket, Key=key)
+            return result
+        finally:
+            if not self._debug and os.path.isfile(tmp):
+                os.remove(tmp)
 
     def generate_random(self):
         self.word = ''
@@ -54,10 +90,15 @@ class DangerousGenerator:
             print("IMAGE BEFORE RESIZE: %s" % item_filename)
         with open(item_filename, 'wb') as f:
             f.write(content)
+        try:
+            return self.generate_from_word_and_image(word, item_filename)
+        finally:
+            if not self._debug and os.path.isfile(item_filename):
+                os.remove(item_filename)
+
+    def generate_from_word_and_image(self, word, image_filename):
         resized_item_filename = tempfile.mkstemp(suffix='.png')[1]
-        self.do_resize(item_filename, resized_item_filename, DangerousGenerator.RESIZE_MAX)
-        if not self._debug:
-            os.remove(item_filename)
+        self.do_resize(image_filename, resized_item_filename, DangerousGenerator.RESIZE_MAX)
         if self._debug:
             print("IMAGE AFTER RESIZE: %s" % resized_item_filename)
         width, height = self.get_dimensions(resized_item_filename)

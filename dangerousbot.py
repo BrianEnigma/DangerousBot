@@ -49,7 +49,7 @@ def lambda_handler(event, context):
     if guess == 0:
         generator = DangerousGenerator(SERP_API_KEY)
         generator.set_debug(DEBUG)
-        if generator.generate_random():
+        if generator.generate_one():
             tweet_text = "It's dangerous to go alone! Take this %s." % generator.get_noun().lower()
             result = "%s // file path %s" % (tweet_text, generator.get_image_path())
 
@@ -61,6 +61,7 @@ def lambda_handler(event, context):
                         result += "Error posting to Mastodon\n"
         else:
             result = "Unable to generate random image: {0}".format(generator.get_error())
+        result += generator.get_debug_log()
     else:
         result += str(guess) + " No, sorry, not this time.\n" #message if the random number fails.
 
